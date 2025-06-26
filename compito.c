@@ -22,7 +22,7 @@ int main(){
     lista lista_appuntamenti = NULL;
 
     while(fgets(riga, 200, planner) != NULL){
-        //printf("\n\nriga letto: %s", riga);
+        printf("\nriga letta: %s", riga);
         size_t len = strlen(riga);
         if(len > 0 && riga[len-1] == '\n')
             riga[len-1] = '\0';
@@ -48,10 +48,6 @@ int main(){
 
     quanti(lista_appuntamenti, appuntamento_prova);
 
-
-    
-
-
     if(fclose(planner) == EOF){
         fprintf(stderr, "\nERROR: chiusura del file avvenuta in maniera errata");
         exit(1);
@@ -67,16 +63,50 @@ void agenda(lista* lista_appuntamenti, tipo_inf a){
     lista cursor = *lista_appuntamenti;
     bool errore = false;
 
-    while(cursor != NULL && !errore){
-        if(compare(cursor->inf, a) == 0)
-            errore = true; 
-        cursor = cursor->pun;
-    }
+    //inserisco l'appuntamento in ordine in base alla data
+    if(cursor == NULL) *lista_appuntamenti = insert_elem(*lista_appuntamenti, new_elem(a));
+    else{
+        bool inserito = false; //indica se l'elemento è stato inserito
+        lista last_node_considered = NULL; //utlimo elementi della lista considerato, serve per inserire l'appuntamento in coda alla lista
 
+        while(cursor != NULL && !errore && !inserito){
+            if(compare(cursor->inf, a) == 0) //se è giè presente un'attività nella stessa data e orarioInizio...
+                errore = true; 
+            else{
+                //*lista_appuntamenti = insert_elem(*lista_appuntamenti, new_elem(a));
+                if(strcmp(cursor->inf.data, a.data) > 0){ //a va inserito prima di cursor
+                    lista ptr_a = new_elem(a);
+                    ptr_a->pun = cursor;
+                    ptr_a->prev = cursor->prev; //importante per evitare che rimanga null
+                    
+                    //se il nuovo elemento deve essere inserito in testa...
+                    if(cursor->prev == NULL){
+                        *lista_appuntamenti = ptr_a;
+                    } else{
+                        cursor->prev->pun = ptr_a;
+                    }
+
+                    inserito = true;
+                }
+
+                //else --> se la data di a è > cursor, vuol dire che a deve essere inserito successivamente
+            }
+
+            last_node_considered = cursor; //aggiorno l'ultimo nodo considerato
+            cursor = cursor->pun;
+        }
+
+        //se l'appuntamento non è mai stato inserito, vuol dire che andava per ultimo 
+        if(!inserito && !errore){
+            lista ptr_a = new_elem(a);
+            last_node_considered->pun = ptr_a;
+            ptr_a->prev = last_node_considered; //importante per evitare rimanga NULL
+        }
+    }
+    
     if(errore)
         fprintf(stderr, "\tErrore: e' gia' previsto un appuntamento allo stesso orario e data di %s", a.descrizione);
-    else
-        *lista_appuntamenti = insert_elem(*lista_appuntamenti, new_elem(a));
+        
 }
 
 void stampa(lista lista_appuntamenti){
@@ -129,7 +159,5 @@ void quanti(lista lista_appuntamenti, tipo_inf a){
     }
 
     //stampo i risultati calcolari
-    printf("%d appuntamento/i prima e %d dopo", precedenti, successivi);
-
-
+    printf("%d appuntamento/i prima e %d dopo\n", precedenti, successivi);
 }
