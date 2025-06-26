@@ -8,6 +8,7 @@
 //prototipi
 void agenda(lista* planner, tipo_inf a);
 void stampa(lista planner);
+void quanti(lista agenda, tipo_inf a);
 
 int main(){
     FILE* planner = fopen("agenda.txt", "r"); //apro agenda.txt in lettura
@@ -37,6 +38,18 @@ int main(){
         count_line++;
     }
 
+    //verifico quanti appuntamenti ci sono prima di un appuntamento
+    //"210919 1400 1430 Pranzo"
+    tipo_inf appuntamento_prova;
+    strcpy(appuntamento_prova.descrizione, "Pranzo");
+    strcpy(appuntamento_prova.data, "210919");
+    strcpy(appuntamento_prova.orarioFine, "1430");
+    strcpy(appuntamento_prova.orarioInizio, "1400");
+
+    quanti(lista_appuntamenti, appuntamento_prova);
+
+
+    
 
 
     if(fclose(planner) == EOF){
@@ -83,4 +96,40 @@ void stampa(lista lista_appuntamenti){
     }
 
     printf("\n\n");
+}
+
+void quanti(lista lista_appuntamenti, tipo_inf a){
+    //scorro la lista per contare il numero di attiità precedenti e successive ad A nello stesso giorno 
+    int precedenti = 0;
+    int successivi = 0; 
+
+    //scorro la lista
+    lista cursor = lista_appuntamenti;
+    while(cursor != NULL){
+        //valuto la data dell'attività considerata
+        if(strcmp(cursor->inf.data, a.data) == 0){ //se sono la stessa data
+            //verifico di non star considerando l'attività a
+            if(compare(cursor->inf, a) == -1){
+                //valuto l'orario
+                int esito = strcmp(cursor->inf.orarioInizio, a.orarioInizio);
+                if(esito < 0)
+                    precedenti++;
+                else if(esito > 0)
+                    successivi++;
+
+                //else --> non conto quell'attività 
+            }
+
+            //else -> non considero l'attività a
+        }
+
+        //else --> se non sono nella stessa data non conteggio nulla
+
+        cursor = cursor->pun;
+    }
+
+    //stampo i risultati calcolari
+    printf("%d appuntamento/i prima e %d dopo", precedenti, successivi);
+
+
 }
