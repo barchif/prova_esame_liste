@@ -86,6 +86,8 @@ void agenda(lista* lista_appuntamenti, tipo_inf a){
                         cursor->prev->pun = ptr_a;
                     }
 
+                    //cursor ha come precedente l'appuntamento a 
+                    cursor->prev = ptr_a;
                     inserito = true;
                 }
 
