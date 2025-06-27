@@ -67,7 +67,7 @@ void agenda(lista* lista_appuntamenti, tipo_inf a){
     if(cursor == NULL) *lista_appuntamenti = insert_elem(*lista_appuntamenti, new_elem(a));
     else{
         bool inserito = false; //indica se l'elemento è stato inserito
-        lista last_node_considered = NULL; //utlimo elementi della lista considerato, serve per inserire l'appuntamento in coda alla lista
+        lista tail_node = NULL; //utlimo elementi della lista considerato, serve per inserire l'appuntamento in coda alla lista
 
         while(cursor != NULL && !errore && !inserito){
             if(compare(cursor->inf, a) == 0) //se è giè presente un'attività nella stessa data e orarioInizio...
@@ -94,15 +94,15 @@ void agenda(lista* lista_appuntamenti, tipo_inf a){
                 //else --> se la data di a è > cursor, vuol dire che a deve essere inserito successivamente
             }
 
-            last_node_considered = cursor; //aggiorno l'ultimo nodo considerato
+            tail_node = cursor; //aggiorno l'ultimo nodo considerato
             cursor = cursor->pun;
         }
 
         //se l'appuntamento non è mai stato inserito, vuol dire che andava per ultimo 
         if(!inserito && !errore){
             lista ptr_a = new_elem(a);
-            last_node_considered->pun = ptr_a;
-            ptr_a->prev = last_node_considered; //importante per evitare rimanga NULL
+            tail_node->pun = ptr_a;
+            ptr_a->prev = tail_node; //importante per evitare rimanga NULL
         }
     }
     
