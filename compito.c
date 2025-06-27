@@ -40,12 +40,12 @@ int main(){
 
     //verifico quanti appuntamenti ci sono prima di un appuntamento
     //"210919 1400 1430 Pranzo"
-    tipo_inf appuntamento_prova;
-    strcpy(appuntamento_prova.descrizione, "Pranzo");
-    strcpy(appuntamento_prova.data, "210919");
-    strcpy(appuntamento_prova.orarioFine, "1430");
-    strcpy(appuntamento_prova.orarioInizio, "1400");
-
+    tipo_inf appuntamento_prova = {
+        .descrizione = "Pranzo", 
+        .data = "210919", 
+        .orarioFine = "1430", 
+        .orarioInizio = "1400"
+    };
     quanti(lista_appuntamenti, appuntamento_prova);
 
     if(fclose(planner) == EOF){
